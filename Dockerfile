@@ -3,11 +3,8 @@ FROM python:3.10-slim
 # Set working directory
 WORKDIR /app
 
-# Install ping utility
-RUN apt-get update && apt-get install -y iputils-ping && rm -rf /var/lib/apt/lists/*
-
-# Copy files
-COPY udp_parser_lookup.py .
+# Copy application files
+COPY udp_parser_lookup_env.py .
 COPY lookup_table_1.json .
 COPY lookup_table_2.json .
 COPY requirements.txt .
@@ -15,8 +12,8 @@ COPY requirements.txt .
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Expose UDP port
+# Expose UDP port (optional default)
 EXPOSE 5000/udp
 
-# Run the script
-CMD ["python", "udp_parser_lookup.py"]
+# Run the main script
+CMD ["python", "udp_parser_lookup_env.py"]
