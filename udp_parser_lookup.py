@@ -4,17 +4,16 @@ import socket
 from influxdb_client import InfluxDBClient, Point, WriteOptions
 from influxdb_client.client.write_api import SYNCHRONOUS
 import time
-import os
 
-# InfluxDB config via environment
-influx_url = os.getenv("INFLUX_URL", "http://172.28.2.35:8086")
-influx_org = os.getenv("INFLUX_ORG", "HIL")
-influx_bucket = os.getenv("INFLUX_BUCKET", "Balltec")
-influx_token = os.getenv("INFLUX_TOKEN", "ci-PRoiUGgN1cRSgi5K0Td5rSeZ2evKxjBAvENGZ57RINbdji3qTNP2uvnix12AuTnA1pdseN--bnYa9zqzz_Q==")
+# Hardcoded InfluxDB config
+influx_url = "http://172.28.2.35:8086"
+influx_org = "HIL"
+influx_bucket = "Balltec"
+influx_token = "ci-PRoiUGgN1cRSgi5K0Td5rSeZ2evKxjBAvENGZ57RINbdji3qTNP2uvnix12AuTnA1pdseN--bnYa9zqzz_Q=="
 
-# UDP config via environment
-UDP_IP = os.getenv("UDP_IP", "10.8.0.109")
-UDP_PORT = int(os.getenv("UDP_PORT", 5000))
+# Hardcoded UDP config
+UDP_IP = "10.8.0.109"
+UDP_PORT = 5000
 
 client = InfluxDBClient(url=influx_url, token=influx_token, org=influx_org)
 write_api = client.write_api(write_options=SYNCHRONOUS)
