@@ -16,4 +16,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 5000/udp
 
 # Run the main script
-CMD ["python", "udp_parser_lookup_env.py"]
+CMD ["python", "udp_parser_lookup.py"]
