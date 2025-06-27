@@ -4,7 +4,7 @@ FROM python:3.10-slim
 WORKDIR /app
 
 # Copy application files
-COPY udp_parser_lookup_env.py .
+COPY udp_parser_lookup.py .
 COPY lookup_table_1.json .
 COPY lookup_table_2.json .
 COPY requirements.txt .
