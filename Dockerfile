@@ -3,7 +3,10 @@ FROM python:3.10-slim
 # Set working directory
 WORKDIR /app
 
-# Copy local files
+# Install ping utility
+RUN apt-get update && apt-get install -y iputils-ping && rm -rf /var/lib/apt/lists/*
+
+# Copy files
 COPY udp_parser_lookup.py .
 COPY lookup_table_1.json .
 COPY lookup_table_2.json .
