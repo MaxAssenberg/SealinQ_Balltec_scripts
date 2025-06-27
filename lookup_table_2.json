@@ -1,0 +1,57 @@
+{
+  "mux": "02",
+  "description": "Lookup Table 2 - Battery & Fault Flags",
+  "fields": {
+    "byte3": {
+      "name": "Battery Voltage %",
+      "unit": "%",
+      "formula": "int(hex, 16)"
+    },
+    "byte4": {
+      "name": "Faults",
+      "type": "bitmask",
+      "bitflags": {
+        "0": "motor 2 fault",
+        "1": "motor 1 fault",
+        "2": "pressure 2 fault",
+        "3": "pressure 1 fault",
+        "4": "Pump 2: Digital input state",
+        "5": "Pump 1: Digital input state",
+        "6": "Locked_Lamp_Amber: Digital output state",
+        "7": "Unlocked_Lamp_White: Digital output state"
+      }
+    },
+    "byte5": {
+      "name": "Battery Faults",
+      "type": "bitmask",
+      "bitflags": {
+        "0": "system fault",
+        "1": "battery on charge",
+        "2": "battery faults",
+        "3": "unused",
+        "4": "both receiving quality bits high",
+        "5": "receiving quality bit 2 high",
+        "6": "any receiving quality bit high",
+        "7": "always 1"
+      }
+    },
+    "byte6": {
+      "name": "Battery % Left 40–50",
+      "type": "bitmask",
+      "bitflags": {
+        "5": "Battery 50%",
+        "6": "Battery 45%",
+        "7": "Battery 40%"
+      }
+    },
+    "byte7": {
+      "name": "Battery % Left 30–35",
+      "type": "bitmask",
+      "bitflags": {
+        "0": "Battery 35%",
+        "1": "Battery 30%"
+      }
+    }
+  }
+}
+

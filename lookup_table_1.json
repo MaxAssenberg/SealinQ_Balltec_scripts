@@ -1,0 +1,32 @@
+{
+  "mux": "01",
+  "description": "Lookup Table 1 - Sensor Values",
+  "fields": {
+    "byte3": {
+      "name": "Linear Distance",
+      "unit": "mm",
+      "formula": "int(hex, 16)"
+    },
+    "byte4": {
+      "name": "Battery Voltage",
+      "unit": "V",
+      "formula": "(int(hex, 16) + 200) / 10"
+    },
+    "byte5": {
+      "name": "Oil Temperature",
+      "unit": "°C",
+      "formula": "int(hex, 16) - 50"
+    },
+    "byte6": {
+      "name": "Pressure 1",
+      "unit": "bar",
+      "formula": "int(hex, 16)"
+    },
+    "byte7": {
+      "name": "Pressure 2",
+      "unit": "bar",
+      "formula": "int(hex, 16)"
+    }
+  }
+}
+
