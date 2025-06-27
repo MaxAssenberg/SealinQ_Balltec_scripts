@@ -9,7 +9,7 @@ import subprocess
 import sys
 
 # InfluxDB config
-influx_url = 'http://influxdb:8086'
+influx_url = 'http://172.28.2.35:8086'
 influx_org = 'HIL'
 influx_bucket = 'Balltec'
 influx_token = 'ci-PRoiUGgN1cRSgi5K0Td5rSeZ2evKxjBAvENGZ57RINbdji3qTNP2uvnix12AuTnA1pdseN--bnYa9zqzz_Q=='
