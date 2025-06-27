@@ -1,1 +1,3 @@
 requests
+azure-iot-device
+influxdb-client
