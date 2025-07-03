@@ -8,13 +8,13 @@ import subprocess
 import sys
 
 # InfluxDB config
-influx_url = 'http://172.28.2.35:8086'
-influx_org = 'HIL'
+influx_url = 'http://10.0.4.200:8086'
+influx_org = 'seaqualize'
 influx_bucket = 'Balltec'
-influx_token = 'ci-PRoiUGgN1cRSgi5K0Td5rSeZ2evKxjBAvENGZ57RINbdji3qTNP2uvnix12AuTnA1pdseN--bnYa9zqzz_Q=='
+influx_token = 'tBWR3s8t4zdmzCBxY1U5qTUJuJUmQW'
 
 # UDP device
-UDP_IP = "10.8.0.109"   # Remote device to talk to
+UDP_IP = "10.1.21.2"   # Remote device to talk to
 UDP_PORT = 5000         # Remote port
 
 # Load lookup tables from JSON files
