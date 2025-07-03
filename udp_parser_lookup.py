@@ -14,8 +14,8 @@ influx_bucket = 'Balltec'
 influx_token = 'tBWR3s8t4zdmzCBxY1U5qTUJuJUmQW'
 
 # UDP device
-UDP_IP = "10.1.21.2"
-UDP_PORT = 5000
+UDP_IP = "10.1.21.2"   # Remote device to talk to
+UDP_PORT = 5000         # Remote port
 
 # Load lookup tables from JSON files
 def load_lookup_tables():
@@ -52,27 +52,24 @@ def ping_check(target_ip, count=10):
 def perform_handshake(sock):
     commands = [
         "CAN 1 STOP\n",
-        "CAN 1 INIT STD 250\n",
-        "CAN 1 FILTER CLEAR\n",
-        "CAN 1 FILTER ADD STD 000 000\n"
+        "CAN 1 INIT LISTEN STD 250\n",
+        "CAN 1 FILTER CLEAR \n",
+        "CAN 1 FILTER ADD STD 264 7FF\n"
     ]
     for cmd in commands:
-        print(f"Sending: {cmd.strip()}")
-        sock.sendto(cmd.encode(), (UDP_IP, UDP_PORT))
-        if "STOP" not in cmd:
-            if not send_and_wait_for_ok(sock, cmd):
-                print(f"Handshake failed at: {cmd.strip()}")
-                return False
-        time.sleep(0.2)
+        if not send_and_wait_for_ok(sock, cmd):
+            print(f"Handshake failed at: {cmd.strip()}")
+            return False
     print("Sending: CAN 1 START")
     sock.sendto(b"CAN 1 START\n", (UDP_IP, UDP_PORT))
     print("Handshake complete.")
     return True
 
-# Only wait for "R ok" — do not re-send
+# Send command and wait for "R ok" response
 def send_and_wait_for_ok(sock, command, retries=3):
     for attempt in range(1, retries + 1):
-        print(f"[Attempt {attempt}] Waiting for response to: {command.strip()}")
+        print(f"[Attempt {attempt}] Sending: {command.strip()}")
+        sock.sendto(command.encode(), (UDP_IP, UDP_PORT))
         try:
             response, _ = sock.recvfrom(1024)
             decoded = response.decode()
@@ -92,8 +89,8 @@ def handle_udp_data(data, lookup_table_1, lookup_table_2):
             print("Too short, skipping")
             return
 
-        mux = msg[6]
-        data_bytes = msg[7:13]
+        mux = msg[6]                    # Byte 2: mux byte
+        data_bytes = msg[7:13]         # Bytes 3–7 (5 data bytes)
 
         table = lookup_table_1 if mux == "01" else lookup_table_2 if mux == "02" else None
         if not table:
@@ -105,7 +102,7 @@ def handle_udp_data(data, lookup_table_1, lookup_table_2):
             byte_index = int(key.replace("byte", ""))
             if byte_index >= len(msg):
                 continue
-            hex_val = msg[byte_index + 4]
+            hex_val = msg[byte_index + 4]  # +4 offset for correct indexing
             if field.get("type") == "bitmask":
                 bit_labels = field.get("bitflags", {})
                 val = int(hex_val, 16)
@@ -131,3 +128,35 @@ def handle_udp_data(data, lookup_table_1, lookup_table_2):
         )
         if not r.ok:
             print(f"Influx write failed: {r.status_code} {r.text}")
+        else:
+            print(f"Wrote to Influx: {line}")
+
+    except Exception as e:
+        print(f"Error parsing or writing: {e}")
+
+# Main
+def main():
+    ping_check(UDP_IP)
+
+    # Open UDP socket and bind to local port 5000
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind(("", 5000))
+    sock.settimeout(10)
+    print("UDP socket bound on port 5000")
+
+    lookup_table_1, lookup_table_2 = load_lookup_tables()
+
+    if not perform_handshake(sock):
+        exit(1)
+
+    print("Listening for UDP stream...")
+    while True:
+        try:
+            data, _ = sock.recvfrom(1024)
+            print(f"[RECV] {len(data)} bytes: {data}")
+            handle_udp_data(data, lookup_table_1, lookup_table_2)
+        except Exception as e:
+            print(f"Receive error: {e}")
+
+if __name__ == "__main__":
+    main()
