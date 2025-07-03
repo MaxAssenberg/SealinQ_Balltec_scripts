@@ -31,4 +31,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/seaqualize/sealinq_balltec_scripts/udp-parser-balltec:latest
+          tags: ghcr.io/seaqualize/sealinq_balltec_scripts/udp-parser-balltec:si
