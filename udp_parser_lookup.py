@@ -14,8 +14,8 @@ influx_bucket = 'Balltec'
 influx_token = 'tBWR3s8t4zdmzCBxY1U5qTUJuJUmQW'
 
 # UDP device
-UDP_IP = "10.1.21.2"   # Remote device to talk to
-UDP_PORT = 5000         # Remote port
+UDP_IP = "10.1.21.2"
+UDP_PORT = 5000
 
 # Load lookup tables from JSON files
 def load_lookup_tables():
@@ -57,9 +57,13 @@ def perform_handshake(sock):
         "CAN 1 FILTER ADD STD 000 000\n"
     ]
     for cmd in commands:
-        if not send_and_wait_for_ok(sock, cmd):
-            print(f"Handshake failed at: {cmd.strip()}")
-            return False
+        print(f"Sending: {cmd.strip()}")
+        sock.sendto(cmd.encode(), (UDP_IP, UDP_PORT))
+        if "STOP" not in cmd:
+            if not send_and_wait_for_ok(sock, cmd):
+                print(f"Handshake failed at: {cmd.strip()}")
+                return False
+        time.sleep(0.2)
     print("Sending: CAN 1 START")
     sock.sendto(b"CAN 1 START\n", (UDP_IP, UDP_PORT))
     print("Handshake complete.")
@@ -68,8 +72,7 @@ def perform_handshake(sock):
 # Send command and wait for "R ok" response
 def send_and_wait_for_ok(sock, command, retries=3):
     for attempt in range(1, retries + 1):
-        print(f"[Attempt {attempt}] Sending: {command.strip()}")
-        sock.sendto(command.encode(), (UDP_IP, UDP_PORT))
+        print(f"[Attempt {attempt}] Waiting for response to: {command.strip()}")
         try:
             response, _ = sock.recvfrom(1024)
             decoded = response.decode()
@@ -89,8 +92,8 @@ def handle_udp_data(data, lookup_table_1, lookup_table_2):
             print("Too short, skipping")
             return
 
-        mux = msg[6]                    # Byte 2: mux byte
-        data_bytes = msg[7:13]         # Bytes 3–7 (5 data bytes)
+        mux = msg[6]
+        data_bytes = msg[7:13]
 
         table = lookup_table_1 if mux == "01" else lookup_table_2 if mux == "02" else None
         if not table:
@@ -102,7 +105,7 @@ def handle_udp_data(data, lookup_table_1, lookup_table_2):
             byte_index = int(key.replace("byte", ""))
             if byte_index >= len(msg):
                 continue
-            hex_val = msg[byte_index + 4]  # +4 offset for correct indexing
+            hex_val = msg[byte_index + 4]
             if field.get("type") == "bitmask":
                 bit_labels = field.get("bitflags", {})
                 val = int(hex_val, 16)
