@@ -52,7 +52,7 @@ def ping_check(target_ip, count=10):
 def perform_handshake(sock):
     commands = [
         "CAN 1 STOP\n",
-        "CAN 1 INIT LISTEN STD 250\n",
+        "CAN 1 INIT LISTEN 250\n",
         "CAN 1 FILTER CLEAR \n",
         "CAN 1 FILTER ADD STD 264 7FF\n"
     ]
