@@ -69,7 +69,7 @@ def perform_handshake(sock):
     print("Handshake complete.")
     return True
 
-# Send command and wait for "R ok" response
+# Only wait for "R ok" — do not re-send
 def send_and_wait_for_ok(sock, command, retries=3):
     for attempt in range(1, retries + 1):
         print(f"[Attempt {attempt}] Waiting for response to: {command.strip()}")
@@ -131,35 +131,3 @@ def handle_udp_data(data, lookup_table_1, lookup_table_2):
         )
         if not r.ok:
             print(f"Influx write failed: {r.status_code} {r.text}")
-        else:
-            print(f"Wrote to Influx: {line}")
-
-    except Exception as e:
-        print(f"Error parsing or writing: {e}")
-
-# Main
-def main():
-    ping_check(UDP_IP)
-
-    # Open UDP socket and bind to local port 5000
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind(("", 5000))
-    sock.settimeout(10)
-    print("UDP socket bound on port 5000")
-
-    lookup_table_1, lookup_table_2 = load_lookup_tables()
-
-    if not perform_handshake(sock):
-        exit(1)
-
-    print("Listening for UDP stream...")
-    while True:
-        try:
-            data, _ = sock.recvfrom(1024)
-            print(f"[RECV] {len(data)} bytes: {data}")
-            handle_udp_data(data, lookup_table_1, lookup_table_2)
-        except Exception as e:
-            print(f"Receive error: {e}")
-
-if __name__ == "__main__":
-    main()
